@@ -1,7 +1,7 @@
 import time
 import pygame
 import math
-from physics import *
+from Physics import *
 
 baseStarter = 750
 b1 = body(500, 0, 0)
