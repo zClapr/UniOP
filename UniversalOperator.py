@@ -1,6 +1,8 @@
-import time
-import pygame
 import math
+import pyglet
+from pyglet.gl import *
+from pyglet.window import key
+from pyglet.window import mouse
 
 from Physics import *
 
@@ -8,78 +10,67 @@ baseStarter = 750
 b1 = body(500, 0, 0)
 b2 = body(500, baseStarter, 0)
 b3 = body(500, (baseStarter/2), (math.sqrt(baseStarter**2 - (baseStarter/2)**2)))
-activeBodys = [b1, b2, b3]
+activeBodies = [b1, b2, b3]
 
-pygame.init()
-pygame.font.init()
+userScreen = pyglet.canvas.Display().get_default_screen()
+screenWidth, screenHeight = userScreen.width, userScreen.height
+window = pyglet.window.Window(screenWidth*0.8, screenHeight*0.8, (__file__.split('/')[-1]), True)
+window.set_minimum_size(screenWidth*0.4, screenHeight*0.4)
 
-pyGameInfoObj = pygame.display.Info()
-pygame.display.set_caption(__file__.split('/')[-1])
-screen = pygame.display.set_mode((pyGameInfoObj.current_w, pyGameInfoObj.current_h))
 on = True
 
 fps = 60
 cameraOffset = [0,0]
 cameraZoom = 100
-cameraChangeSpeed = 5
-keyInputs = []
-mouseStartPos = None
-mouseEndPos = None
+camPos = [0,0,-20]
+camRotX = 0
+camRotY = 0
 
-while on:
-    #start = time.time()
-    for event in pygame.event.get():
-        type = event.type
-        if (type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) or (event.type == pygame.QUIT):
-            on = False
-        elif type == pygame.KEYDOWN:
-            keyInputs.append(event.key)
-        elif type == pygame.KEYUP:
-            keyInputs.remove(event.key)
-        elif type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                mouseStartPos = event.pos
-                mouseEndPos = event.pos
-            elif event.button == 4:
-                cameraZoom += cameraChangeSpeed
-            elif event.button == 5:
-                cameraZoom -= cameraChangeSpeed
-        elif type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
-                mouseStartPos = None
-        elif event.type == pygame.MOUSEMOTION and mouseStartPos != None:
-            mouseStartPos = mouseEndPos
-            mouseEndPos = event.pos
-            cameraOffset[0] -= (mouseEndPos[0] - mouseStartPos[0])*(100/cameraZoom)
-            cameraOffset[1] -= (mouseEndPos[1] - mouseStartPos[1])*(100/cameraZoom)
-    
-    if pygame.K_LEFT in keyInputs:
-        cameraOffset[0] -= cameraChangeSpeed*(100/cameraZoom)
-    if pygame.K_RIGHT in keyInputs:
-        cameraOffset[0] += cameraChangeSpeed*(100/cameraZoom)
-    if pygame.K_UP in keyInputs:
-        cameraOffset[1] -= cameraChangeSpeed*(100/cameraZoom)
-    if pygame.K_DOWN in keyInputs:
-        cameraOffset[1] += cameraChangeSpeed*(100/cameraZoom)
+text_cameraOffset = pyglet.text.Label(f'Camera Offset: {cameraOffset}', font_name='Courier New', font_size=30, x=10, y=10)
+text_cameraZoom = pyglet.text.Label(f'Camera Zoom: {cameraZoom}%', font_name='Courier New', font_size=30, x=10, y=40)
 
-    screen.fill((0, 0, 0))
+@window.event
+def on_draw():
+    window.clear()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(90, 1, 0.1, 100)
 
-    font_CSMS = pygame.font.SysFont('Comic Sans MS', 30)
-    text_cameraOffset = font_CSMS.render(f'Camera Offset: {cameraOffset}', True, pygame.Color('white'), None)
-    text_cameraZoom = font_CSMS.render(f'Camera Zoom: {cameraZoom}%', True, pygame.Color('white'), None)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
 
-    for celestialBody in activeBodys:
-        #celestialBody.update()
-        pygame.draw.circle(screen, (0,150,0), ((celestialBody.x*(cameraZoom/100))-(cameraOffset[0]*(cameraZoom/100)), 
-                                              (celestialBody.y*(cameraZoom/100))-(cameraOffset[1]*(cameraZoom/100))), 
-                                              celestialBody.radius*(cameraZoom/100))
+    glTranslatef(*camPos)
+    glRotatef(camRotY, 1, 0, 0)
+    glRotatef(camRotX, 0, 1, 0)
 
-    screen.blit(text_cameraOffset, (10, 10))
-    screen.blit(text_cameraZoom, (10, 40))
+    glBegin(GL_POLYGON)
+    for body in activeBodies:
+        for point in body.draw():
+            glVertex3f(point[0], point[1], point[2])
+    glEnd()
 
-    pygame.display.flip()
+    glFlush()
 
-    #end = time.time()
-    #elapsed = end-start
+@window.event
+def on_key_press(s,m):
+    global camRotX, camRotY
 
-    time.sleep(1/fps)
+    if s == (pyglet.window.key.W or pyglet.window.key.UP):
+        camRotY -= 10
+    if s == (pyglet.window.key.S or pyglet.window.key.DOWN):
+        camRotY += 10
+    if s == (pyglet.window.key.A or pyglet.window.key.LEFT):
+        camRotX += 10
+    if s == (pyglet.window.key.D or pyglet.window.key.RIGHT):
+        camRotX -= 10
+
+@window.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    global camRotX, camRotY
+
+    if buttons & mouse.LEFT:
+        camRotX -= dx
+        camRotY += dy
+
+#pyglet.clock.schedule_interval(update,1/60.0)
+pyglet.app.run()
