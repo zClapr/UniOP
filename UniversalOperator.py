@@ -46,7 +46,7 @@ def on_draw():
     glBegin(GL_POLYGON)
     for body in activeBodies:
         for point in body.draw():
-            glVertex3f(point[0], point[1], point[2])
+            pyglet.draw(point[0], point[1], point[2])
     glEnd()
 
     glFlush()
