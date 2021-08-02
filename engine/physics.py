@@ -1,14 +1,5 @@
 import math
-
-def floatRange(start, end, step):
-    result = []
-    tempVar = start
-
-    while tempVar <= end:
-        result.append(tempVar)
-        tempVar += step
-    
-    return result
+from utility import extramaths
 
 class body:
     def __init__(self, mass, x, y, radius=None, density=None, resolution=20):
@@ -26,10 +17,10 @@ class body:
             else:
                 self.density = density
                 self.radius = (3*((mass*density)/(4*math.pi))**1/3)
-
-    def draw(self):
+    
+    def getPoints(self):
         points = []
-        crossedLines = floatRange(0, self.radius*2, (self.radius*2)/self.resolution)
+        crossedLines = extramaths.floatRange(0, self.radius*2, (self.radius*2)/self.resolution)
         # get all float-numbers between 0 and diameter with step diameter/crossSectionsWanted
 
         for x in crossedLines:
@@ -42,6 +33,3 @@ class body:
                     pass
         
         return points
-    
-    def update():
-        pass
