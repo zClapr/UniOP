@@ -40,22 +40,25 @@ class mainWindow(pyglet.window.Window):
         pyglet.clock.schedule(self.update)
 
         self.model = Model()
-        self.player = Player((0.5,1.5,1.5),(-30,0))
-
-    def on_mouse_motion(self,x,y,dx,dy):
-        if self.inputLock: 
-            self.player.mouse_motion(dx,dy)
+        self.player = Player((3,3,5),(0,0))
+    
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        if buttons == mouse.MIDDLE:
+            multi = 0.2
+            self.player.cam_rotate(dx*multi, dy*multi)
+        if buttons == mouse.RIGHT:
+            multi = 0.1
+            self.player.encircular_rotate(dx*multi, dy*multi)
+    
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        multi = 0.01
+        self.player.zoom(scroll_y*multi)
 
     def on_key_press(self,KEY,MOD):
         if KEY == key.Q: self.close()
-        elif KEY == key.ESCAPE and self.inputLock: self.inputLock = False
-    
-    def on_mouse_press(self, x, y, button, modifiers):
-        if button == mouse.LEFT and not self.inputLock: self.inputLock = True
 
     def update(self,dt):
-        if self.inputLock:
-            self.player.update(dt,self.keys)
+        self.player.update(dt,self.keys)
 
     def on_draw(self):
         self.clear()

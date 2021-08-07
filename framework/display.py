@@ -17,7 +17,7 @@ class Model:
 
         tex_coords = ('t2f',(0,0, 1,0, 1,1, 0,1, ))
 
-        x,y,z = 0,0,0
+        x,y,z = -0.5, -0.5, -0.5
         X,Y,Z = x+1,y+1,z+1
         rx,ry,rz = 0,0,0
 
