@@ -9,6 +9,7 @@ class Player:
     def cam_rotate(self,dx,dy):
         self.rot[0]+=dy
         self.rot[1]-=dx
+        print(self.rot)
     
     def encircular_rotate(self,dx,dy):
         dx = -dx
@@ -26,9 +27,9 @@ class Player:
         self.pos[0] = cos(dx/flat_radius + current_flat_angle) * flat_radius
         self.pos[2] = cos(dy/deep_radius + current_deep_angle) * deep_radius
 
-        # self.rot[1] = degrees(atan(self.pos[1]/self.pos[2]))
-        # self.rot[0] = degrees(atan(self.pos[0]/self.pos[2]))
-        # print(self.rot)
+        #self.rot[0] = degrees(atan(self.pos[0]/sqrt(self.pos[1]**2 + self.pos[2]**2)))
+        #self.rot[1] = degrees(atan(self.pos[2]/self.pos[0]))
+        #print(self.rot)
     
     def zoom(self, dy):
         self.pos[0] *= (1+dy)
