@@ -4,7 +4,7 @@ from pyglet.window import key
 from pyglet.window import mouse
 
 from framework.player import Player
-from framework.display import Model
+from engine.graphics import Model
 from setup import active
 
 userScreen = Display().get_default_screen()
@@ -40,7 +40,7 @@ class mainWindow(pyglet.window.Window):
         pyglet.clock.schedule(self.update)
 
         self.model = Model()
-        self.player = Player((3,3,5),(0,0))
+        self.player = Player(pos=(5,5,-10),rot=(-30,150))
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         if buttons == mouse.MIDDLE:

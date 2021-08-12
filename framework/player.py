@@ -6,10 +6,13 @@ class Player:
         self.pos = list(pos)
         self.rot = list(rot)
 
+    def debug(self):
+        print(self.pos)
+        print(self.rot)
+
     def cam_rotate(self,dx,dy):
         self.rot[0]+=dy
         self.rot[1]-=dx
-        print(self.rot)
     
     def encircular_rotate(self,dx,dy):
         dx = -dx
