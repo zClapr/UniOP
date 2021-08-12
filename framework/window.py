@@ -43,9 +43,6 @@ class mainWindow(pyglet.window.Window):
         self.player = Player(pos=(5,5,-10),rot=(-30,150))
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        if buttons == mouse.MIDDLE:
-            multi = 0.2
-            self.player.cam_rotate(dx*multi, dy*multi)
         if buttons == mouse.RIGHT:
             multi = 0.1
             self.player.encircular_rotate(dx*multi, dy*multi)
@@ -56,6 +53,7 @@ class mainWindow(pyglet.window.Window):
 
     def on_key_press(self,KEY,MOD):
         if KEY == key.Q: self.close()
+        if KEY == key.FUNCTION: self.player.debug()
 
     def update(self,dt):
         self.player.update(dt,self.keys)

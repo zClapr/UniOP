@@ -7,32 +7,20 @@ class Player:
         self.rot = list(rot)
 
     def debug(self):
-        print(self.pos)
-        print(self.rot)
+        print(self.rot[0])
 
     def cam_rotate(self,dx,dy):
         self.rot[0]+=dy
         self.rot[1]-=dx
+
+        if self.rot[0]>=360:self.rot[0]=0
+        if self.rot[0]<=-360:self.rot[0]=0
+        if self.rot[1]>=360:self.rot[0]=0
+        if self.rot[1]<=-360:self.rot[0]=0
     
     def encircular_rotate(self,dx,dy):
-        dx = -dx
-        dy = -dy
-
-        flat_radius = sqrt(self.pos[1]**2 + self.pos[0]**2)
-        deep_radius = sqrt(self.pos[1]**2 + self.pos[2]**2)
-        current_flat_angle = atan(self.pos[1]/self.pos[0])
-        current_deep_angle = atan(self.pos[1]/self.pos[2])
-
-        if self.pos[0] < 0:
-            current_flat_angle += pi
-
-        self.pos[1] = sin(dx/flat_radius + current_flat_angle) * flat_radius
-        self.pos[0] = cos(dx/flat_radius + current_flat_angle) * flat_radius
-        self.pos[2] = cos(dy/deep_radius + current_deep_angle) * deep_radius
-
-        #self.rot[0] = degrees(atan(self.pos[0]/sqrt(self.pos[1]**2 + self.pos[2]**2)))
-        #self.rot[1] = degrees(atan(self.pos[2]/self.pos[0]))
-        #print(self.rot)
+        # UNWORKING
+        pass
     
     def zoom(self, dy):
         self.pos[0] *= (1+dy)
@@ -62,3 +50,13 @@ class Player:
             self.pos[1]+=s
         if keys[key.LSHIFT]: 
             self.pos[1]-=s
+        
+        if self.pos[1] <= 0:
+            self.rot[0] = degrees(atan(abs(self.pos[1]) / sqrt(self.pos[0]**2 + self.pos[2]**2)))
+        else:
+            self.rot[0] = - degrees(atan(abs(self.pos[1]) / sqrt(self.pos[0]**2 + self.pos[2]**2)))
+
+        if self.pos[2] >= 0:
+            self.rot[1] = degrees(atan(self.pos[0]/self.pos[2]))
+        else:
+            self.rot[1] = degrees(atan(self.pos[0]/self.pos[2])) + 180
