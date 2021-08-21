@@ -19,8 +19,19 @@ class Player:
         if self.rot[1]<=-360:self.rot[0]=0
     
     def encircular_rotate(self,dx,dy):
-        # UNWORKING
-        pass
+        dx = -dx; dy = -dy
+
+        xy_radius = sqrt(self.pos[0]**2 + self.pos[1]**2)
+        xz_radius = sqrt(self.pos[0]**2 + self.pos[2]**2)
+        xy_angle = atan(self.pos[1] / sqrt(self.pos[0]**2 + self.pos[2]**2))
+        xz_angle = atan(self.pos[0]/self.pos[2])
+
+        if self.pos[2] < 0:
+            xz_angle += pi
+
+        self.pos[0] = sin(dx/xz_radius + xz_angle) * xz_radius
+        self.pos[2] = cos(dx/xz_radius + xz_angle) * xz_radius
+        #self.pos[1] = cos(dy/xy_radius + xy_angle) * xy_radius # NEED UPDATE
     
     def zoom(self, dy):
         self.pos[0] *= (1+dy)
