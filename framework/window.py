@@ -44,7 +44,7 @@ class mainWindow(pyglet.window.Window):
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         if buttons == mouse.RIGHT:
-            multi = 0.1
+            multi = 0.25
             self.player.encircular_rotate(dx*multi, dy*multi)
     
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
