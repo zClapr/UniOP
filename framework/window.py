@@ -41,22 +41,13 @@ class mainWindow(pyglet.window.Window):
 
         self.model = Model()
         self.player = Player(pos=(5,5,-10),rot=(-30,150))
-    
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        if buttons == mouse.RIGHT:
-            multi = 0.25
-            self.player.encircular_rotate(dx*multi, dy*multi)
-    
-    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
-        multi = 0.01
-        self.player.zoom(scroll_y*multi)
 
     def on_key_press(self,KEY,MOD):
         if KEY == key.Q: self.close()
         if KEY == key.FUNCTION: self.player.debug()
 
     def update(self,dt):
-        self.player.update(dt,self.keys)
+        self.player.update_byKeys(dt,self.keys)
 
     def on_draw(self):
         self.clear()
