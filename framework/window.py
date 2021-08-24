@@ -45,6 +45,11 @@ class mainWindow(pyglet.window.Window):
     def on_key_press(self,KEY,MOD):
         if KEY == key.Q: self.close()
         if KEY == key.FUNCTION: self.player.debug()
+    
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        multi = 0.2
+        if buttons == mouse.MIDDLE:
+            self.player.cam_rotate(dx*multi,dy*multi)
 
     def update(self,dt):
         self.player.update_byKeys(dt,self.keys)

@@ -7,6 +7,7 @@ class Player:
     def __init__(self,pos=(0,0,0),rot=(0,0)):
         self.pos = list(pos)
         self.rot = list(rot)
+        self.dx,self.dy = 0,0
 
     def debug(self):
         pass
@@ -22,29 +23,27 @@ class Player:
 
     def update_byKeys(self,dt,keys):
 
-        In = dt*10
-        rotX = radians(-self.rot[1])
-        rotY = radians(-self.rot[0])
+        if keys[key.W]:
+            self.dy = -dt
+        if keys[key.S]:
+            self.dy = dt
+        if keys[key.A]:
+            self.dx = dt
+        if keys[key.D]:
+            self.dx = -dt
 
-        lOriginToXZ = cos(rotY)*In
-        dy = In*tan(rotY)
-        dx = lOriginToXZ*sin(rotX)
-        dz = lOriginToXZ*cos(rotX)
+        spherical_radius = sqrt(self.pos[0]**2 + self.pos[1]**2 + self.pos[2]**2)
+        ay = acos(self.pos[1]/spherical_radius) + self.dy
+        ax = atan(self.pos[2]/self.pos[0]) + self.dx
 
-        if keys[key.W]: 
-            self.pos[0]+=dx
-            self.pos[1]+=dy
-            self.pos[2]-=dz
-        if keys[key.S]: 
-            self.pos[0]-=dx
-            self.pos[1]-=dy
-            self.pos[2]+=dz
-        if keys[key.A]: 
-            self.pos[0]-=dz
-            self.pos[2]-=dx
-        if keys[key.D]: 
-            self.pos[0]+=dz
-            self.pos[2]+=dx
+        self.pos[1] = spherical_radius * cos(ay)
+
+        if self.pos[0] <= 0:
+            self.pos[0] = -spherical_radius * cos(ax) * sin(ay)
+            self.pos[2] = -spherical_radius * sin(ax) * sin(ay)
+        else:
+            self.pos[0] = spherical_radius * cos(ax) * sin(ay)
+            self.pos[2] = spherical_radius * sin(ax) * sin(ay)
         
         if self.pos[1] < 0:
             self.rot[0] = degrees(atan(abs(self.pos[1]) / sqrt(self.pos[0]**2 + self.pos[2]**2)))
@@ -55,3 +54,5 @@ class Player:
             self.rot[1] = degrees(atan(self.pos[0]/self.pos[2]))
         elif self.pos[2] < 0:
             self.rot[1] = degrees(atan(self.pos[0]/self.pos[2])) + 180
+        
+        self.dx,self.dy = 0,0
