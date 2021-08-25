@@ -3,7 +3,7 @@ from pyglet.gl import *
 from pyglet.window import key
 from pyglet.window import mouse
 
-from framework.player import Player
+from framework.user_input import user
 from engine.graphics import Model
 from setup import active
 
@@ -40,24 +40,24 @@ class mainWindow(pyglet.window.Window):
         pyglet.clock.schedule(self.update)
 
         self.model = Model()
-        self.player = Player(pos=(5,5,-10),rot=(-30,150))
+        self.user = user(pos=(5,5,-10),rot=(-30,150))
 
     def on_key_press(self,KEY,MOD):
         if KEY == key.Q: self.close()
-        if KEY == key.FUNCTION: self.player.debug()
+        if KEY == key.FUNCTION: self.user.debug()
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         multi = 0.2
         if buttons == mouse.MIDDLE:
-            self.player.cam_rotate(dx*multi,dy*multi)
+            self.user.cam_rotate(dx*multi,dy*multi)
 
     def update(self,dt):
-        self.player.update_byKeys(dt,self.keys)
+        self.user.move(dt,self.keys)
 
     def on_draw(self):
         self.clear()
         self.set3d()
-        self.push(self.player.pos,self.player.rot)
+        self.push(self.user.pos,self.user.rot)
 
         self.model.draw() # includes all shapes
         glPopMatrix()

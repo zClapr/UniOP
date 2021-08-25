@@ -1,9 +1,7 @@
-import pyglet
 from pyglet.window import key
-from pyglet.window import mouse as m
 from math import *
 
-class Player:
+class user:
     def __init__(self,pos=(0,0,0),rot=(0,0)):
         self.pos = list(pos)
         self.rot = list(rot)
@@ -21,7 +19,7 @@ class Player:
         if self.rot[1]>=360:self.rot[0]=0
         if self.rot[1]<=-360:self.rot[0]=0
 
-    def update_byKeys(self,dt,keys):
+    def move(self,dt,keys):
 
         if keys[key.W]:
             self.dy = -dt
