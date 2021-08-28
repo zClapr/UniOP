@@ -38,7 +38,7 @@ class mainWindow(pyglet.window.Window):
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
         pyglet.clock.schedule(self.update)
-
+        
         self.model = Model()
         self.user = user(pos=(5,5,-10),rot=(-30,150))
 
@@ -52,14 +52,17 @@ class mainWindow(pyglet.window.Window):
             self.user.cam_rotate(dx*multi,dy*multi)
 
     def update(self,dt):
-        self.user.move(dt,self.keys)
+        self.user.move_update(dt,self.keys)
 
     def on_draw(self):
         self.clear()
         self.set3d()
         self.push(self.user.pos,self.user.rot)
 
+        glDisable(GL_LIGHTING)
         self.model.draw() # includes all shapes
+        glEnable(GL_LIGHTING)
+
         glPopMatrix()
         glFlush()
     

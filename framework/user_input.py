@@ -19,7 +19,7 @@ class user:
         if self.rot[1]>=360:self.rot[0]=0
         if self.rot[1]<=-360:self.rot[0]=0
 
-    def move(self,dt,keys):
+    def move_update(self,dt,keys):
 
         if keys[key.W]:
             self.dy = -dt
