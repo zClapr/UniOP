@@ -80,7 +80,7 @@ def draw_sphere(batch:graphics.Batch, coordinates:list, radius:float, resolution
     def sortByY(x):
         return x[1]
 
-    for yDeg_segment in floatRange(0,180,180/resolution):
+    for yDeg_segment in floatRange(0,180,180/(resolution-1)):
         x = radius * cos(radians(0)) * sin(radians(yDeg_segment))
         y = radius * cos(radians(yDeg_segment))
         z = radius * sin(radians(0)) * sin(radians(yDeg_segment))
@@ -99,7 +99,7 @@ def draw_sphere(batch:graphics.Batch, coordinates:list, radius:float, resolution
         if point != (semispherical_points_sortedByY[0] or semispherical_points_sortedByY[-1]):
             r = sqrt(point[0]**2 + point[2]**2)
 
-            for xDegSegment in floatRange(0+(180/resolution), 360, 180/resolution):
+            for xDegSegment in floatRange(360/resolution, 360, 360/resolution):
                 x = r * cos(radians(xDegSegment))
                 z = r * sin(radians(xDegSegment))
                 xAlignedPoints.append([
@@ -110,37 +110,23 @@ def draw_sphere(batch:graphics.Batch, coordinates:list, radius:float, resolution
         
         points.append(xAlignedPoints)
 
-    quads = []
+    layers = []
+
+    for xAlignedPoints in points:
+        vertices = []
+        textures = []
+        for point in xAlignedPoints:
+            vertices.append(point)
+            vertices.append(xAlignedPoints[xAlignedPoints.index(point)+1])
+        # vertices.append(xAlignedPoints[0])
+
+        vlist = graphics.vertex_list(int(len(vertices)/3), ('v3f', vertices))
+        layers.append(vlist)
+
     for xAlignedPoints in points:
         for point in xAlignedPoints:
-            if point != (xAlignedPoints[0] or xAlignedPoints[-1]):
-
-                cXaPoints_index = points.index(xAlignedPoints)
-                cPoint_index = xAlignedPoints.index(point)
-
-                try:
-                    quad_vertices = point + xAlignedPoints[cPoint_index+1]
-                except IndexError:
-                    quad_vertices = point + xAlignedPoints[0]
-
-                try:
-                    quad_vertices += points[cXaPoints_index+1][cPoint_index] + points[cXaPoints_index+1][cPoint_index+1]
-                except IndexError:
-                    pass
-                
-                quads.append(quad_vertices)
-
-    # for xAlignedPoints in points:
-    #     for point in xAlignedPoints:
-    #         batch.add(
-    #             1,GL_POINTS,None,
-    #             ('c3B', (color[0],color[1],color[2])),
-    #             ('v3f',(point[0],point[1],point[2]))
-    #         )
-
-    for quad in quads:
-        batch.add(
-            4,GL_QUADS,None,
-            ('c3B', (color[0],color[1],color[2])),
-            ('v3f',tuple(quad))
-        )
+            batch.add(
+                1,GL_POINTS,None,
+                ('c3B', (color[0],color[1],color[2])),
+                ('v3f',(point[0],point[1],point[2]))
+            )
