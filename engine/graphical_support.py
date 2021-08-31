@@ -4,12 +4,8 @@ from pyglet import image
 import itertools
 from utility.extramaths import *
 from math import *
-
-def get_texure(file):
-    tex = image.load(file).get_texture()
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST)
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST)
-    return graphics.TextureGroup(tex)
+from pyglet import sprite
+from random import randint
 
 def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None, axis_length:float=25.0, tip_size:float=None):
     if not tip_size:
@@ -61,7 +57,10 @@ def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None
     )
 
 def draw_cube(batch:graphics.Batch, coordinates:tuple):
-    side = get_texure('./assets/dirt.png')
+    tex = image.load('./assets/dirt.png').get_texture()
+    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST)
+    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST)
+    side = graphics.TextureGroup(tex)
     coords = ('t2f',coordinates)
 
     x,y,z = -0.5, -0.5, -0.5
@@ -76,57 +75,30 @@ def draw_cube(batch:graphics.Batch, coordinates:tuple):
     batch.add(4,GL_QUADS,side,('v3f',(x,y,Z, X,y,Z, X,Y,Z, x,Y,Z, )),coords)
 
 def draw_sphere(batch:graphics.Batch, coordinates:list, radius:float, resolution:float, color:list):
-    semispherical_points = []
-    def sortByY(x):
-        return x[1]
-
-    for yDeg_segment in floatRange(0,180,180/(resolution-1)):
-        x = radius * cos(radians(0)) * sin(radians(yDeg_segment))
-        y = radius * cos(radians(yDeg_segment))
-        z = radius * sin(radians(0)) * sin(radians(yDeg_segment))
-        semispherical_points.append([
-            x + coordinates[0],
-            y + coordinates[1],
-            z + coordinates[2]
-        ])
-
-    semispherical_points_sortedByY = sorted(semispherical_points, key=sortByY)
-    points = []
-    for point in semispherical_points_sortedByY:
-        xAlignedPoints = []
-        xAlignedPoints.append(point)
-
-        if point != (semispherical_points_sortedByY[0] or semispherical_points_sortedByY[-1]):
-            r = sqrt(point[0]**2 + point[2]**2)
-
-            for xDegSegment in floatRange(360/resolution, 360, 360/resolution):
-                x = r * cos(radians(xDegSegment))
-                z = r * sin(radians(xDegSegment))
-                xAlignedPoints.append([
-                    x + coordinates[0],
-                    point[1] + coordinates[1],
-                    z + coordinates[2]
-                ])
-        
-        points.append(xAlignedPoints)
-
     layers = []
 
-    for xAlignedPoints in points:
+    for latitude in floatRange(-90, 90, 180/resolution):
         vertices = []
         textures = []
-        for point in xAlignedPoints:
-            vertices.append(point)
-            vertices.append(xAlignedPoints[xAlignedPoints.index(point)+1])
-        # vertices.append(xAlignedPoints[0])
 
-        vlist = graphics.vertex_list(int(len(vertices)/3), ('v3f', vertices))
-        layers.append(vlist)
+        color[color.index(max(color))] += 15
 
-    for xAlignedPoints in points:
-        for point in xAlignedPoints:
+        for longtitude in floatRange(-180, 180, 360/resolution):
+            x = -cos(radians(latitude)) * cos(radians(longtitude)) * radius
+            y = sin(radians(latitude)) * radius
+            z = cos(radians(latitude)) * sin(radians(longtitude)) * radius
+
+            vertices += [x,y,z]
+            textures += color
+
+            x = -cos(radians((latitude+(180/resolution)))) * cos(radians(longtitude)) * radius
+            y = sin(radians((latitude+(180/resolution)))) * radius
+            z = cos(radians((latitude+(180/resolution)))) * sin(radians(longtitude)) * radius
+            
+            vertices += [x,y,z]
+            textures += color
+
             batch.add(
-                1,GL_POINTS,None,
-                ('c3B', (color[0],color[1],color[2])),
-                ('v3f',(point[0],point[1],point[2]))
+                int(len(vertices)/3), GL_TRIANGLE_STRIP, None,
+                ('v3f', tuple(vertices)), ('c3B', tuple(textures))
             )

@@ -11,6 +11,6 @@ class Model:
         draw_axis(self.batch, 'x', (165,0,0))
         draw_axis(self.batch, 'y', (0,165,0))
         draw_axis(self.batch, 'z', (65,65,185))
-        draw_sphere(self.batch, [0,0,0], 5, 10, [0,255,0])
+        draw_sphere(self.batch, [0,0,0], 5, 10, [48,68,26])
 
         self.batch.draw()

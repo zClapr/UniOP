@@ -37,7 +37,8 @@ class mainWindow(pyglet.window.Window):
         self.set_minimum_size(screenWidth*0.4, screenHeight*0.4)
         self.keys = key.KeyStateHandler()
         self.push_handlers(self.keys)
-        pyglet.clock.schedule(self.update)
+        #pyglet.clock.schedule(self.update)
+        pyglet.clock.schedule_interval(self.update, 1/10.0)
         
         self.model = Model()
         self.user = user(pos=(5,5,-10),rot=(-30,150))
