@@ -1,9 +1,8 @@
-import math
-from engine.physics import body
+from engine.physics import celestrial_body
 
 baseStarter = 750
-b1 = body(500, 0, 0)
-b2 = body(500, baseStarter, 0)
-b3 = body(500, (baseStarter/2), (math.sqrt(baseStarter**2 - (baseStarter/2)**2)))
+b1 = celestrial_body(50, [20,20,0])
+b2 = celestrial_body(50, [-20,20,0])
+b3 = celestrial_body(50, [0,-20,0])
 
 active = [b1, b2, b3]

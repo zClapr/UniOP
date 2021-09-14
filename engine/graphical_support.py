@@ -4,8 +4,6 @@ from pyglet import image
 import itertools
 from utility.extramaths import *
 from math import *
-from pyglet import sprite
-from random import randint
 
 def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None, axis_length:float=25.0, tip_size:float=None):
     if not tip_size:
@@ -73,32 +71,3 @@ def draw_cube(batch:graphics.Batch, coordinates:tuple):
     batch.add(4,GL_QUADS,side,('v3f',(x,Y,Z, X,Y,Z, X,Y,z, x,Y,z, )),coords)
     batch.add(4,GL_QUADS,side,('v3f',(X,y,z, x,y,z, x,Y,z, X,Y,z, )),coords)
     batch.add(4,GL_QUADS,side,('v3f',(x,y,Z, X,y,Z, X,Y,Z, x,Y,Z, )),coords)
-
-def draw_sphere(batch:graphics.Batch, coordinates:list, radius:float, resolution:float, color:list):
-    layers = []
-
-    for latitude in floatRange(-90, 90, 180/resolution):
-        vertices = []
-        textures = []
-
-        color[color.index(max(color))] += 15
-
-        for longtitude in floatRange(-180, 180, 360/resolution):
-            x = -cos(radians(latitude)) * cos(radians(longtitude)) * radius
-            y = sin(radians(latitude)) * radius
-            z = cos(radians(latitude)) * sin(radians(longtitude)) * radius
-
-            vertices += [x,y,z]
-            textures += color
-
-            x = -cos(radians((latitude+(180/resolution)))) * cos(radians(longtitude)) * radius
-            y = sin(radians((latitude+(180/resolution)))) * radius
-            z = cos(radians((latitude+(180/resolution)))) * sin(radians(longtitude)) * radius
-            
-            vertices += [x,y,z]
-            textures += color
-
-            batch.add(
-                int(len(vertices)/3), GL_TRIANGLE_STRIP, None,
-                ('v3f', tuple(vertices)), ('c3B', tuple(textures))
-            )
