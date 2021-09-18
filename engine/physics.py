@@ -6,19 +6,14 @@ from pyglet.gl import GL_TRIANGLE_STRIP
 
 import random
 
-def GetSphere(r, pos:list, texture):
-    resolution = 10
+def getSphericalLayer(layerNumber:int, r:float, pos:list, texture:list, resolution:int=10, dColorPerLayer:int=5):
     layers = []
     latiLayerAngles = floatRange(-90, 90, 180/resolution)
 
     for latiLayerAngle in latiLayerAngles:
         vertices, textures = [], []
-        # color = self.color
-        # color[color.index(max(color))] = int(
-        #     color[color.index(max(color))] +
-        #     (latiLayerAngles.index(latiLayerAngle)/len(latiLayerAngles)*15)
-        # )
-        # self.color[self.color.index(max(self.color))] += random.randint(-30,30)
+        dColor = int((latiLayerAngles.index(latiLayerAngle)/len(latiLayerAngles)-0.5)*dColorPerLayer)
+        texture[texture.index(max(texture))] += dColor
 
         for longLayerAngle in floatRange(-180, 180, 360/resolution):
             x = -cos(radians(latiLayerAngle)) * cos(radians(longLayerAngle)) * r + pos[0]
@@ -37,7 +32,7 @@ def GetSphere(r, pos:list, texture):
         
         layers.append([vertices, textures])
 
-    return layers
+    return layers[layerNumber-1]
 
 class celestrial_body:
     def __init__(self, mass:float, position:list, radius:float=None, density:float=None, color:list=[56, 163, 42]):
@@ -61,22 +56,25 @@ class celestrial_body:
                 self.density = density
                 self.radius = (3*((mass*density)/(4*pi))**1/3)
         
-        for layer in self.get_layers():
-                vertices, textures = layer[0], layer[1]
+        for layerNumber in range(1,11):
+            layer = getSphericalLayer(layerNumber, self.radius, self.position, self.color)
+            vertices, textures = layer[0], layer[1]
 
-                l = self.batch.add(
-                    int(len(vertices)/3), GL_TRIANGLE_STRIP, None,
-                    ('v3f', tuple(vertices)), ('c3B', tuple(textures))
-                )
+            l = self.batch.add(
+                int(len(vertices)/3), GL_TRIANGLE_STRIP, None,
+                ('v3f', tuple(vertices)), ('c3B', tuple(textures))
+            )
 
-                self.layers.append(l)
+            self.layers.append(l)
 
     def draw(self):
         for c in self.position:
             self.position[self.position.index(c)] += random.randint(-1,1)
 
-        for layer_number in range(0, len(self.layers)-1):
-            self.layers[layer_number].vertices[:] = self.get_layers()[layer_number][0]
+        for layerNumber in range(0, len(self.layers)-1):
+            self.layers[layerNumber].vertices[:] = getSphericalLayer(
+                layerNumber, self.radius, self.position, self.color
+            )[0]
             
         self.batch.draw()
     
