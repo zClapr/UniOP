@@ -5,9 +5,10 @@ from pyglet.window import mouse
 
 from framework.user_input import user
 from engine.graphics import Model
-from setup import active
+from engine.physics import cosmos
 
 import datetime
+import platform
 
 userScreen = Display().get_default_screen()
 screenWidth, screenHeight = userScreen.width, userScreen.height
@@ -36,29 +37,44 @@ class mainWindow(pyglet.window.Window):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_minimum_size(screenWidth*0.4, screenHeight*0.4)
-        # pyglet.clock.schedule(self.update)
-        # pyglet.clock.schedule_interval(self.update, 1/10.0)
+        
+        glClearColor(0.04, 0.07, 0.17, 1)
+        glEnable(GL_DEPTH_TEST)
+        # glEnable(GL_CULL_FACE)
+        glPointSize(20)
+
+        self.set_minimum_size(int(screenWidth*0.4), int(screenHeight*0.4))
         
         self.keydowns = []
         self.model = Model()
         self.user = user(pos=(25,20,50))
-        self.updatables = active
+
+        self.updating = True
+        if self.updating == True:
+            pyglet.clock.schedule(cosmos.update)
 
     def on_key_press(self,KEY,MOD):
+        if KEY == key.SPACE:
+            if self.updating == False:
+                pyglet.clock.schedule(cosmos.update)
+                self.updating = True
+            else:
+                pyglet.clock.unschedule(cosmos.update)
+                self.updating = False
+        
         if KEY == key.Q: self.close()
         if KEY == key.FUNCTION: self.user.debug()
 
-    #     delta = 0.25
-    #     if KEY == key.W:
-    #         self.user.manual_change(dy=-delta)
-    #     if KEY == key.A:
-    #         self.user.manual_change(dx=delta)
-    #     if KEY == key.S:
-    #         self.user.manual_change(dy=delta)
-    #     if KEY == key.D:
-    #         self.user.manual_change(dx=-delta)
-    #     self.user.move_update()
+        # delta = 0.25
+        # if KEY == key.W:
+        #     self.user.manual_change(dy=-delta)
+        # if KEY == key.A:
+        #     self.user.manual_change(dx=delta)
+        # if KEY == key.S:
+        #     self.user.manual_change(dy=delta)
+        # if KEY == key.D:
+        #     self.user.manual_change(dx=-delta)
+        # self.user.move_update()
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         if buttons == mouse.MIDDLE:
@@ -66,12 +82,6 @@ class mainWindow(pyglet.window.Window):
         if buttons == mouse.RIGHT:
             self.user.manual_change(dx = dx*0.01, dy = dy*0.01)
             self.user.move_update()
-
-    def update(self,dt):
-        pass
-        # for cb in active:
-        #     cb.update()
-        #     cb.draw()
 
     def on_draw(self):
         self.clear()
@@ -86,4 +96,7 @@ class mainWindow(pyglet.window.Window):
         glFlush()
     
     def on_resize(self, width, height):
-        glViewport(0, 0, int(width*2), int(height*2))
+        if platform.system() == 'Darwin':
+            glViewport(0, 0, int(width*2), int(height*2))
+        else:
+            glViewport(0, 0, int(width), int(height))
