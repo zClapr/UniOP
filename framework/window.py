@@ -83,6 +83,10 @@ class mainWindow(pyglet.window.Window):
             self.user.manual_change(dx = dx*0.01, dy = dy*0.01)
             self.user.move_update()
 
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        if scroll_y:
+            self.user.zoom(1 + (-scroll_y / 10))
+
     def on_draw(self):
         self.clear()
         self.set3d()

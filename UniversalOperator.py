@@ -9,8 +9,8 @@ window = mainWindow(
     caption=(__file__.split('/')[-1]), resizable=True, vsync=False
 )
 
-b1 = celestrial_body(50, [20,20,0], [0,0,0], 1, radius=4)
-b2 = celestrial_body(50, [-20,20,0], [0,0,0], 0, radius=8)
-b3 = celestrial_body(50, [0,-20,0], [0,0,0], 2, radius=3)
+b1 = celestrial_body(50, [10,10,10], [0,255,0], 1, radius=4)
+b2 = celestrial_body(100, [5,-5,0], [255,0,0], 0, radius=8)
+b3 = celestrial_body(50, [-10,-10,-10], [0,0,255], 2, radius=3)
 
 pyglet.app.run()
