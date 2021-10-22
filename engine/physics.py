@@ -51,32 +51,25 @@ class celestrial_body:
         
         return total_texts
 
-    def getGravForceTo(self, body):
-        pos1, pos2 = self.position, body.position
-        # offset_x, offset_y, offset_z = pos1[0]-pos2[0], pos1[1]-pos2[1], pos1[2]-pos2[2]
-
-        # if dz < 0:
-        #     ax = -ax
-
-        distance = sqrt((pos1[0]-pos2[0])**2 + (pos1[2]-pos2[2])**2 + (pos1[1]-pos2[1])**2)     # meters
-        force = G * ((self.mass*body.mass)/(distance**2))       # absolute value
-
-        return force
-
-    def getVectorTo(self, towards_body):
+    def getForceVectorTo(self, towards_body, arrow_mode:bool = True):
         sbp,tbp = towards_body.position, self.position
         offset_x,offset_y,offset_z = sbp[0]-tbp[0], sbp[1]-tbp[1], sbp[2]-tbp[2]
+        distance = sqrt((tbp[0]-sbp[0])**2 + (tbp[2]-sbp[2])**2 + (tbp[1]-sbp[1])**2)
+        force = G * ((self.mass*towards_body.mass)/(distance**2))
 
         try:
             ay = atan(offset_y/sqrt((offset_x**2)+(offset_z**2)))
         except ZeroDivisionError:
             ay = 0
 
-        dy = sin(ay) * (
-            self.radius
-            + self.getGravForceTo(towards_body) * 10000000000
-            # + sqrt(offset_x**2 + offset_y**2 + offset_z**2)*0.1
-        )
+        if arrow_mode:
+            dy = sin(ay) * (
+                self.radius
+                + (force / self.mass) * 1000000000000
+                # + distance * 0.1
+            )
+        else:
+            dy = sin(ay)*(force/self.mass)
 
         try: dx = (dy/offset_y)*offset_x
         except ZeroDivisionError: dx = offset_x
@@ -117,12 +110,12 @@ class celestrial_body:
         for other_body in cosmos.objects:
             self.vectors[other_body] = (self.batch.add(
                 2,GL_LINES,None,
-                ('v3f',tuple(self.getVectorTo(other_body))),
+                ('v3f',tuple(self.getForceVectorTo(other_body))),
                 ('c3B',tuple(other_body.color + other_body.color))
             ))
             other_body.vectors[self] = (other_body.batch.add(
                 2,GL_LINES,None,
-                ('v3f',tuple(other_body.getVectorTo(self))),
+                ('v3f',tuple(other_body.getForceVectorTo(self))),
                 ('c3B',tuple(self.color + self.color))
             ))
 
@@ -133,7 +126,7 @@ class celestrial_body:
             layer.vertices[:] = self.getSphereVertices()[self.layers.index(layer)]
 
         for targetObj in self.vectors:
-            self.vectors[targetObj].vertices[:] = self.getVectorTo(targetObj)
+            self.vectors[targetObj].vertices[:] = self.getForceVectorTo(targetObj)
 
         self.batch.draw()
 
@@ -153,19 +146,12 @@ class cosmos:
     def update(cls, dt):
         tdt = cls.play_speed * dt
 
-        for bpair in cls.obj_combinations:
-            pass
-            # for body in bpair:
-            #     delta_vector = [
-            #         dx/body.mass,
-            #         dy/body.mass,
-            #         dz/body.mass
-            #     ]
-
-            #     for vec_pos in body.velocity:
-            #         body.velocity[body.velocity.index(vec_pos)] += delta_vector[body.velocity.index(vec_pos)]
-                
         for body in cls.objects:
             if body.velocity != [0,0,0]:
                 for coordinate in body.position:
                     body.position[body.position.index(coordinate)] += body.velocity[body.position.index(coordinate)]*tdt
+            
+            for other_body in body.vectors:
+                dPos = body.getForceVectorTo(other_body, arrow_mode=False)[-3:]
+                for dPosIndicator in dPos:
+                    body.velocity[dPos.index(dPosIndicator)] -= (dPosIndicator*tdt)

@@ -42,6 +42,7 @@ class mainWindow(pyglet.window.Window):
         glEnable(GL_DEPTH_TEST)
         # glEnable(GL_CULL_FACE)
         glPointSize(20)
+        glEnable(GL_LINE_SMOOTH)
 
         self.set_minimum_size(int(screenWidth*0.4), int(screenHeight*0.4))
         
