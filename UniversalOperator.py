@@ -8,11 +8,12 @@ window = mainWindow(
     caption=(__file__.split('/')[-1]), resizable=True, vsync=False
 )
 
-b1 = celestrial_body(50, [30,30,30], [0,255,0], 1, radius=4)
-b2 = celestrial_body(100, [15,-15,0], [255,0,0], 0, radius=8)
-b3 = celestrial_body(50, [-30,-30,-30], [0,0,255], 2, radius=3)
-b4 = celestrial_body(50000, [-50,-50,-50], [0,0,255], 2, radius=10)
+# basic solar system
+star = celestrial_body(500, [0,0,0], [255,0,0], 0, radius=20)
+planet = celestrial_body(1, [200,1,1], [0,255,0], 1, radius=8)
+moon = celestrial_body(0.0001, [200,31,11], [0,0,255], 2, radius=5)
 
-# b1.setVelocity([-1,1,1])
+planet.setVelocity([0,0,300])
+moon.setVelocity([0,10,150])
 
 pyglet.app.run()

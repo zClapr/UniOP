@@ -65,7 +65,7 @@ class celestrial_body:
         if arrow_mode:
             dy = sin(ay) * (
                 self.radius
-                + (force / self.mass) * 1000000000000
+                + (force / self.mass)**(1/2) * 100000000
                 # + distance * 0.1
             )
         else:
@@ -139,12 +139,14 @@ class cosmos:
     objects = []
     play_speed = 1
     vectors = []
+    time = 0
 
     obj_combinations = list(combinations(objects, 2))
 
     @classmethod
     def update(cls, dt):
         tdt = cls.play_speed * dt
+        cls.time += tdt
 
         for body in cls.objects:
             if body.velocity != [0,0,0]:

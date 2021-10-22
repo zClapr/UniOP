@@ -5,7 +5,7 @@ import itertools
 from utility.extramaths import *
 from math import *
 
-def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None, axis_length:float=25.0, tip_size:float=None):
+def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None, axis_length:float=100.0, tip_size:float=None):
     if not tip_size:
         tip_size = axis_length/50
     arrow_base = axis_length-(tip_size*3)

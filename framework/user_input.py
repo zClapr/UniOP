@@ -8,9 +8,6 @@ class user:
         self.cam_update()
         self.dx,self.dy = 0,0
 
-    def debug(self):
-        pass
-
     def cam_rotate(self,dx,dy):
         self.rot[0]+=dy
         self.rot[1]-=dx

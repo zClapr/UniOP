@@ -7,8 +7,8 @@ from framework.user_input import user
 from engine.graphics import Model
 from engine.physics import cosmos
 
-import datetime
 import platform
+from math import sqrt
 
 userScreen = Display().get_default_screen()
 screenWidth, screenHeight = userScreen.width, userScreen.height
@@ -41,14 +41,14 @@ class mainWindow(pyglet.window.Window):
         glClearColor(0.04, 0.07, 0.17, 1)
         glEnable(GL_DEPTH_TEST)
         # glEnable(GL_CULL_FACE)
-        glPointSize(20)
+        # glPointSize(20)
         glEnable(GL_LINE_SMOOTH)
 
         self.set_minimum_size(int(screenWidth*0.4), int(screenHeight*0.4))
         
         self.keydowns = []
         self.model = Model()
-        self.user = user(pos=(25,20,50))
+        self.user = user(pos=(175,125,200))
 
         self.updating = True
         if self.updating == True:
@@ -63,8 +63,15 @@ class mainWindow(pyglet.window.Window):
                 pyglet.clock.unschedule(cosmos.update)
                 self.updating = False
         
+        if KEY == key.F1:
+            print('POSITION:             ' + str(self.user.pos))
+            print('VIEW ANGLE:           ' + str(self.user.rot))
+            print('DISTANCE FROM ORIGIN: ' + str(
+                sqrt(self.user.pos[0]**2 + self.user.pos[1]**2 + self.user.pos[2]**2)
+            ))
+
+        
         if KEY == key.Q: self.close()
-        if KEY == key.FUNCTION: self.user.debug()
 
         # delta = 0.25
         # if KEY == key.W:
