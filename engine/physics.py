@@ -60,7 +60,12 @@ class celestrial_body:
         try:
             ay = atan(offset_y/sqrt((offset_x**2)+(offset_z**2)))
         except ZeroDivisionError:
-            ay = 0
+            if offset_y > 0:
+                ay = radians(90)
+            elif offset_y < 0:
+                ay = radians(-90)
+            else:
+                ay = 0
 
         if arrow_mode:
             dy = sin(ay) * (
@@ -71,10 +76,30 @@ class celestrial_body:
         else:
             dy = sin(ay)*(force/self.mass)
 
-        try: dx = (dy/offset_y)*offset_x
-        except ZeroDivisionError: dx = offset_x
-        try: dz = (dy/offset_y)*offset_z
-        except ZeroDivisionError: dz = offset_z
+        try:
+            try: 
+                dx = (dy/offset_y)*offset_x
+            except ZeroDivisionError:
+                ax = atan(offset_x/offset_z)
+
+                if offset_z > 0:
+                    dx = sin(ax)*(force/self.mass)
+                elif offset_z < 0:
+                    dx = sin(ax)*(force/self.mass)
+                else:
+                    dx = offset_x
+            try: 
+                dz = (dy/offset_y)*offset_z
+            except ZeroDivisionError: 
+                if offset_z > 0:
+                    dz = cos(ax)*(force/self.mass)
+                elif offset_z < 0:
+                    dz = -(cos(ax)*(force/self.mass))
+                else:
+                    dz = offset_z
+        except ZeroDivisionError:
+            dx = offset_x
+            dz = offset_z
 
         return list(
             self.position + [
