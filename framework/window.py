@@ -50,7 +50,7 @@ class mainWindow(pyglet.window.Window):
         self.model = Model()
         self.user = user(pos=(175,125,200))
 
-        self.updating = True
+        self.updating = False
         if self.updating == True:
             pyglet.clock.schedule(cosmos.update)
 

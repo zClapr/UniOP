@@ -60,9 +60,9 @@ class celestrial_body:
         try:
             ay = atan(offset_y/sqrt((offset_x**2)+(offset_z**2)))
         except ZeroDivisionError:
-            if offset_y > 0:
+            if offset_y < 0:
                 ay = radians(90)
-            elif offset_y < 0:
+            elif offset_y > 0:
                 ay = radians(-90)
             else:
                 ay = 0
@@ -74,7 +74,7 @@ class celestrial_body:
                 # + distance * 0.1
             )
         else:
-            dy = sin(ay)*(force/self.mass)
+            dy = (sin(ay)*(force/self.mass))**1
 
         try:
             try: 
@@ -82,18 +82,18 @@ class celestrial_body:
             except ZeroDivisionError:
                 ax = atan(offset_x/offset_z)
 
-                if offset_z > 0:
+                if offset_z < 0:
                     dx = sin(ax)*(force/self.mass)
-                elif offset_z < 0:
-                    dx = sin(ax)*(force/self.mass)
+                elif offset_z > 0:
+                    dx = -(sin(ax)*(force/self.mass))
                 else:
                     dx = offset_x
             try: 
                 dz = (dy/offset_y)*offset_z
             except ZeroDivisionError: 
-                if offset_z > 0:
+                if offset_z < 0:
                     dz = cos(ax)*(force/self.mass)
-                elif offset_z < 0:
+                elif offset_z > 0:
                     dz = -(cos(ax)*(force/self.mass))
                 else:
                     dz = offset_z
@@ -101,18 +101,21 @@ class celestrial_body:
             dx = offset_x
             dz = offset_z
 
-        return list(
-            self.position + [
-                self.position[0] + dx,
-                self.position[1] + dy,
-                self.position[2] + dz
-            ]
-        )
+        if arrow_mode:
+            return list(
+                self.position + [
+                    self.position[0] + dx,
+                    self.position[1] + dy,
+                    self.position[2] + dz
+                ]
+            )
+        else:
+            return [dx, dy, dz]
 
     def __init__(self, mass:float, position:list, color:list, dcolor:int, radius:float=None, density:float=None):
         self.mass = mass
         self.color = color
-        self.batch = graphics.Batch() # sprite.Sprite()
+        self.batch = graphics.Batch()
         self.layers, self.vectors = [], {}
         self.velocity = [0,0,0]
 
@@ -156,13 +159,11 @@ class celestrial_body:
         self.batch.draw()
 
     def setVelocity(self, value:list):
-        # DEBUG ONLY
-        
         self.velocity = value
 
 class cosmos:
     objects = []
-    play_speed = 1
+    play_speed = 1000000
     vectors = []
     time = 0
 
@@ -179,6 +180,6 @@ class cosmos:
                     body.position[body.position.index(coordinate)] += body.velocity[body.position.index(coordinate)]*tdt
             
             for other_body in body.vectors:
-                dPos = body.getForceVectorTo(other_body, arrow_mode=False)[-3:]
+                dPos = body.getForceVectorTo(other_body, arrow_mode=False)
                 for dPosIndicator in dPos:
-                    body.velocity[dPos.index(dPosIndicator)] -= (dPosIndicator*tdt)
+                    body.velocity[dPos.index(dPosIndicator)] += (dPosIndicator*tdt)
