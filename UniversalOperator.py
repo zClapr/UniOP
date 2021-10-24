@@ -1,9 +1,8 @@
 if __name__ == '__main__':
-    from threading import Thread
+    from threading import Thread, Event
     import pyglet
     from framework.window import mainWindow, screenWidth, screenHeight
     from engine.physics import celestrial_body, cosmos
-    from framework.console_handler import inputLoop
 
     # # # # # # # # # # # # # # # # #
     # # SIMULATION CONFIGURATIONS # #
@@ -23,12 +22,24 @@ if __name__ == '__main__':
     b2 = celestrial_body(300, [10,110,10], [0,255,0], 1, radius=20)
     b3 = celestrial_body(500, [10,10,110], [0,0,255], 2, radius=30)
 
+    # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # #
+    
+    def inputLoop():
+        while True:
+            try:
+                exec(input())
+            except Exception as e:
+                print(repr(e))
+                pass
+
     print(r"""
- _   _       _  ___  ____
-| | | |_ __ (_)/ _ \|  _ \
-| | | | '_ \| | | | | |_) |
-| |_| | | | | | |_| |  __/
- \___/|_| |_|_|\___/|_|
+  _   _       _  ___  ____
+ | | | |_ __ (_)/ _ \|  _ \
+ | | | | '_ \| | | | | |_) |
+ | |_| | | | | | |_| |  __/
+  \___/|_| |_|_|\___/|_|
         """)
     print('--------------- \n' + 'ACTIVE OBJECTS:')
     for body in cosmos.objects:
@@ -36,8 +47,11 @@ if __name__ == '__main__':
             str(cosmos.objects.index(body)) + ' | '
             + str(body) + ' with a mass of ' + str(body.mass) + ' at ' + str(body.position)
         )
-    Thread(target=inputLoop).start()
+
+    consoleListener = Thread(target=inputLoop)
+    consoleListener.start()
     
     pyglet.app.run()
+
 else:
     raise(Exception('Illegal action! Unimportable file is only to be executed as main script'))
