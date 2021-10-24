@@ -163,7 +163,6 @@ class celestrial_body:
 
 class cosmos:
     objects = []
-    play_speed = 1000000
     vectors = []
     time = 0
 

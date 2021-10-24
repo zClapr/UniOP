@@ -1,14 +1,12 @@
-from concurrent import futures
-from concurrent.futures import ThreadPoolExecutor
+from pyglet import app
 
-executor = ThreadPoolExecutor(max_workers=3)
+user_input = None
 
-def get_input():
-    return input()
+def process_cmd(cmd):
+    pass
 
-def activation(future):
-    result = future.result()
-    print('USER SAID ' + str(result))
-
-while True:
-    executor.submit(get_input).add_done_callback(activation)
+def inputLoop():
+    global user_input
+    while app.event_loop.is_running:
+        user_input = input()
+        exec(user_input)
