@@ -1,8 +1,10 @@
 from math import *
+from typing import Coroutine
 
 from pyglet.gl.gl import GL_LINES
 from utility.extramaths import *
 from itertools import combinations
+from sys import getsizeof
 
 from pyglet import graphics
 from pyglet.gl import GL_TRIANGLE_STRIP
@@ -164,21 +166,67 @@ class celestrial_body:
 class cosmos:
     objects = []
     vectors = []
-    time = 0
-
+    viewingTime = 0
+    timeline = {}
     obj_combinations = list(combinations(objects, 2))
 
     @classmethod
     def update(cls, dt):
-        tdt = cls.play_speed * dt
-        cls.time += tdt
+        cls.updateToTime(cls.viewingTime)
+        cls.viewingTime += (dt*cls.time_accuracy)
+
+    @classmethod
+    def updateToTime(cls, time):
+        if cls.viewingTime != time:
+            cls.viewingTime = time
+
+        roundedTime = closest(list(cls.timeline.keys()), time)
 
         for body in cls.objects:
-            if body.velocity != [0,0,0]:
-                for coordinate in body.position:
-                    body.position[body.position.index(coordinate)] += body.velocity[body.position.index(coordinate)]*tdt
-            
-            for other_body in body.vectors:
-                dPos = body.getForceVectorTo(other_body, arrow_mode=False)
-                for dPosIndicator in dPos:
-                    body.velocity[dPos.index(dPosIndicator)] += (dPosIndicator*tdt)
+            pos_data = cls.timeline[roundedTime][cls.objects.index(body)]
+            body.position = pos_data
+    
+    @classmethod
+    # def calc(cls, timePer, maxTime, stopEvent):
+    def calc(cls, timePer, maxTime):
+        print('CALCULATION STARTED, PLEASE WAIT...', end='\r')
+
+        sPos,sVel = [], []
+        for sBody in cls.objects:
+            sPos.append(list(sBody.position))
+            sVel.append(list(sBody.velocity))
+
+        time = 0
+        positionsAtTheTime = []
+        for body in cls.objects:
+            positionsAtTheTime.append(list(body.position))
+
+        while (time < maxTime) or ((time+timePer) <= maxTime):
+            for body in cls.objects:
+                if body.velocity != [0,0,0]:
+                    for c in body.position:
+                        i = body.position.index(c)
+                        body.position[i] += body.velocity[i]*timePer
+
+                for other_body in list(body.vectors.keys()):
+                    dPos = list(body.getForceVectorTo(other_body, arrow_mode=False))
+                    for dPosIndicator in dPos:
+                        body.velocity[dPos.index(dPosIndicator)] += (dPosIndicator*timePer)
+
+                positionsAtTheTime[cls.objects.index(body)] = list(body.position)
+
+            cls.timeline[float(time)] = list(positionsAtTheTime)
+            time += timePer
+
+        for body in cls.objects:
+            body.position = sPos[cls.objects.index(body)]
+
+        with open('timeline.json', 'w+') as f:
+            import json
+            t = []
+            for x in list(cls.timeline.values()):
+                t.append(x[0])
+            json.dump(t, f)
+        print(
+            'SIMULATION READY!!! (' + str(byteSimplify(getsizeof(cls.timeline))) + ' memory cached)'
+        )

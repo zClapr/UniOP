@@ -69,7 +69,6 @@ class mainWindow(pyglet.window.Window):
             print('DISTANCE FROM ORIGIN: ' + str(
                 sqrt(self.user.pos[0]**2 + self.user.pos[1]**2 + self.user.pos[2]**2)
             ))
-
         
         if KEY == key.Q: self.close()
 
@@ -100,9 +99,7 @@ class mainWindow(pyglet.window.Window):
         self.set3d()
         self.push(self.user.pos,self.user.rot)
 
-        glDisable(GL_LIGHTING)
         self.model.draw()
-        glEnable(GL_LIGHTING)
 
         glPopMatrix()
         glFlush()
