@@ -26,7 +26,7 @@ def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None
         for point in arrow_points:
             temp.append((point[1],point[2],point[0]))
         arrow_points = temp
-        
+
         for point in line_points:
             temp2.append((point[1],point[2],point[0]))
         line_points = temp2
@@ -41,13 +41,13 @@ def draw_axis(batch:graphics.Batch, rotation:str, color:tuple, color2:tuple=None
             ('c3B', (color[0],color[1],color[2], color[0],color[1],color[2], color[0],color[1],color[2])), 
             ('v3f', (triangle[0][0],triangle[0][1],triangle[0][2], triangle[1][0],triangle[1][1],triangle[1][2], triangle[2][0],triangle[2][1],triangle[2][2]))
         )
-    
+
     if not color2:
         temp=[]
         for positional_color in color:
             temp.append(positional_color)
         color2 = tuple(temp)
-    glLineWidth(50)
+    glLineWidth(5)
     batch.add(
         2,GL_LINES,None,
         ('c3B', (color[0],color[1],color[2], color2[0],color2[1],color2[2])),

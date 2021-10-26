@@ -5,7 +5,7 @@ def floatRange(start, end, step):
     while tempVar <= end:
         result.append(tempVar)
         tempVar += step
-    
+
     return result
 
 def closest(from_list:list, number:float):
@@ -28,3 +28,23 @@ def byteSimplify(bytes):
     elif MB <= b < GB: return '{0:.2f} MB'.format(b/MB)
     elif GB <= b < TB: return '{0:.2f} GB'.format(b/GB)
     elif TB <= b: return '{0:.2f} TB'.format(b/TB)
+
+def display_time(seconds):
+    intervals = (
+        ('years', 60*60*24*365),
+        ('days', 60*60*24),
+        ('hours', 60*60),
+        ('minutes', 60),
+        ('seconds', 1),
+    )
+
+    result = []
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("{} {}".format(value, name))
+    return ','.join(result)

@@ -57,7 +57,7 @@ class user:
         self.cam_update()
 
         self.dx,self.dy = 0,0
-    
+
     def zoom(self, scale):
         ny = (sin(atan(self.pos[1] / sqrt(self.pos[0]**2 + self.pos[2]**2))) 
             * (sqrt(self.pos[0]**2 + self.pos[1]**2 + self.pos[2]**2)*scale)

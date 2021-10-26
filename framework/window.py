@@ -37,15 +37,14 @@ class mainWindow(pyglet.window.Window):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         glClearColor(0.04, 0.07, 0.17, 1)
         glEnable(GL_DEPTH_TEST)
-        # glEnable(GL_CULL_FACE)
-        # glPointSize(20)
+        glLineWidth(3)
         glEnable(GL_LINE_SMOOTH)
 
         self.set_minimum_size(int(screenWidth*0.4), int(screenHeight*0.4))
-        
+
         self.keydowns = []
         self.model = Model()
         self.user = user(pos=(175,125,200))
@@ -62,29 +61,18 @@ class mainWindow(pyglet.window.Window):
             else:
                 pyglet.clock.unschedule(cosmos.update)
                 self.updating = False
-        
+
         if KEY == key.F1:
             print('POSITION:             ' + str(self.user.pos))
             print('VIEW ANGLE:           ' + str(self.user.rot))
             print('DISTANCE FROM ORIGIN: ' + str(
                 sqrt(self.user.pos[0]**2 + self.user.pos[1]**2 + self.user.pos[2]**2)
             ))
-        
+
         if KEY == key.Q: self.close()
 
-        # delta = 0.25
-        # if KEY == key.W:
-        #     self.user.manual_change(dy=-delta)
-        # if KEY == key.A:
-        #     self.user.manual_change(dx=delta)
-        # if KEY == key.S:
-        #     self.user.manual_change(dy=delta)
-        # if KEY == key.D:
-        #     self.user.manual_change(dx=-delta)
-        # self.user.move_update()
-    
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        if buttons == mouse.MIDDLE:
+        if buttons == mouse.LEFT:
             self.user.cam_rotate(dx*0.2,dy*0.2)
         if buttons == mouse.RIGHT:
             self.user.manual_change(dx = dx*0.01, dy = dy*0.01)
@@ -103,7 +91,7 @@ class mainWindow(pyglet.window.Window):
 
         glPopMatrix()
         glFlush()
-    
+
     def on_resize(self, width, height):
         if platform.system() == 'Darwin':
             glViewport(0, 0, int(width*2), int(height*2))

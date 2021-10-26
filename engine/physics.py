@@ -29,11 +29,11 @@ class celestrial_body:
                 x = -cos(radians((latiLayerAngle+(180/resolution)))) * cos(radians(longLayerAngle)) * self.radius + self.position[0]
                 y = sin(radians((latiLayerAngle+(180/resolution)))) * self.radius + self.position[1]
                 z = cos(radians((latiLayerAngle+(180/resolution)))) * sin(radians(longLayerAngle)) * self.radius + self.position[2]
-                
+
                 vertices += [x,y,z]
-            
+
             total_verts.append(vertices)
-            
+
         return total_verts
 
     def getSphereColors(self, resolution:int=10, dColorPerLayer:int=25, colorToBeModified:int=1):
@@ -50,7 +50,7 @@ class celestrial_body:
                 textures += texture
                 textures += texture
             total_texts.append(textures)
-        
+
         return total_texts
 
     def getForceVectorTo(self, towards_body, arrow_mode:bool = True):
@@ -72,8 +72,7 @@ class celestrial_body:
         if arrow_mode:
             dy = sin(ay) * (
                 self.radius
-                + (force / self.mass)**(1/2) * 100000000
-                # + distance * 0.1
+                -log10(force / self.mass)
             )
         else:
             dy = (sin(ay)*(force/self.mass))**1
@@ -128,7 +127,7 @@ class celestrial_body:
         else:
             if density == None: self.density = mass; self.radius = (3*(mass/(4*pi)))**1/3
             else: self.density = density; self.radius = (3*((mass*density)/(4*pi))**1/3)
-        
+
         verts = self.getSphereVertices(); texts = self.getSphereColors(colorToBeModified=dcolor)
         for layer in verts:
             l = self.batch.add(
@@ -169,11 +168,16 @@ class cosmos:
     viewingTime = 0
     timeline = {}
     obj_combinations = list(combinations(objects, 2))
+    fps = 10
+    topRenderedTime = float()
 
     @classmethod
     def update(cls, dt):
         cls.updateToTime(cls.viewingTime)
-        cls.viewingTime += (dt*cls.time_accuracy)
+        if cls.viewingTime < cls.topRenderedTime:
+            cls.viewingTime += (dt*cls.time_accuracy*cls.fps)
+        else:
+            print('MAXIMUM RENDERED TIME REACHED, CHANGE SCRIPT SETTINGS IF MORE WISH TO BE VIEWED', end='\r')
 
     @classmethod
     def updateToTime(cls, time):
@@ -185,11 +189,11 @@ class cosmos:
         for body in cls.objects:
             pos_data = cls.timeline[roundedTime][cls.objects.index(body)]
             body.position = pos_data
-    
+
     @classmethod
-    # def calc(cls, timePer, maxTime, stopEvent):
     def calc(cls, timePer, maxTime):
-        print('CALCULATION STARTED, PLEASE WAIT...', end='\r')
+        cls.topRenderedTime = maxTime
+        print('CALCULATION STARTED, PLEASE WAIT...')
 
         sPos,sVel = [], []
         for sBody in cls.objects:
@@ -221,12 +225,13 @@ class cosmos:
         for body in cls.objects:
             body.position = sPos[cls.objects.index(body)]
 
-        with open('timeline.json', 'w+') as f:
-            import json
-            t = []
-            for x in list(cls.timeline.values()):
-                t.append(x[0])
-            json.dump(t, f)
+        # with open('timeline.json', 'w+') as f:
+        #     import json
+        #     json.dump([x[0] for x in list(cls.timeline.values())], f)
         print(
-            'SIMULATION READY!!! (' + str(byteSimplify(getsizeof(cls.timeline))) + ' memory cached)'
+            'SIMULATION READY!!! \n' 
+            + str(byteSimplify(getsizeof(cls.timeline))) + ' total memory cached for timeline \n'
+            + str(len(cls.timeline)) + ' frames are loaded, playing at ' + str(cls.fps) + ' frames per second \n'
+            + str(len(cls.timeline)/cls.fps) + 's of simulation is rendered, resembling ' 
+            + str(display_time(cls.topRenderedTime))
         )
