@@ -170,12 +170,13 @@ class cosmos:
     obj_combinations = list(combinations(objects, 2))
     fps = 10
     topRenderedTime = float()
+    playspeed = 1
 
     @classmethod
     def update(cls, dt):
         cls.updateToTime(cls.viewingTime)
         if cls.viewingTime < cls.topRenderedTime:
-            cls.viewingTime += (dt*cls.time_accuracy*cls.fps)
+            cls.viewingTime += (dt*cls.time_accuracy*cls.fps*cls.playspeed)
         else:
             print('MAXIMUM RENDERED TIME REACHED, CHANGE SCRIPT SETTINGS IF MORE WISH TO BE VIEWED', end='\r')
 
@@ -231,7 +232,7 @@ class cosmos:
         print(
             'SIMULATION READY!!! \n' 
             + str(byteSimplify(getsizeof(cls.timeline))) + ' total memory cached for timeline \n'
-            + str(len(cls.timeline)) + ' frames are loaded, playing at ' + str(cls.fps) + ' frames per second \n'
+            + str(len(cls.timeline)) + ' frames are loaded, playing at ' + str(cls.fps) + ' (default) frames per second \n'
             + str(len(cls.timeline)/cls.fps) + 's of simulation is rendered, resembling ' 
             + str(display_time(cls.topRenderedTime))
         )

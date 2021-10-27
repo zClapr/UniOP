@@ -38,6 +38,9 @@ class mainWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.keys = key.KeyStateHandler()
+        self.push_handlers(self.keys)
+
         glClearColor(0.04, 0.07, 0.17, 1)
         glEnable(GL_DEPTH_TEST)
         glLineWidth(3)
@@ -50,11 +53,15 @@ class mainWindow(pyglet.window.Window):
         self.user = user(pos=(175,125,200))
 
         self.updating = False
+        pyglet.clock.schedule(self.update)
         if self.updating == True:
             pyglet.clock.schedule(cosmos.update)
+    
+    def update(self,dt):
+        self.user.keyStateUpdate(dt, self.keys)
 
     def on_key_press(self,KEY,MOD):
-        if KEY == key.SPACE:
+        if KEY == key.P:
             if self.updating == False:
                 pyglet.clock.schedule(cosmos.update)
                 self.updating = True

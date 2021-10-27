@@ -7,6 +7,30 @@ class user:
         self.rot = [0,0]
         self.cam_update()
         self.dx,self.dy = 0,0
+    
+    def keyStateUpdate(self, dt, keys):
+        s = dt*250
+        rotY = -self.rot[1]/180*pi
+        dx = s*sin(rotY)
+        dz = s*cos(rotY)
+        
+        if keys[key.W]: 
+            self.pos[0]+=dx
+            self.pos[2]-=dz
+        if keys[key.S]: 
+            self.pos[0]-=dx
+            self.pos[2]+=dz
+        if keys[key.A]: 
+            self.pos[0]-=dz
+            self.pos[2]-=dx
+        if keys[key.D]: 
+            self.pos[0]+=dz
+            self.pos[2]+=dx
+
+        if keys[key.SPACE]: 
+            self.pos[1]+=s
+        if keys[key.LSHIFT]: 
+            self.pos[1]-=s
 
     def cam_rotate(self,dx,dy):
         self.rot[0]+=dy
