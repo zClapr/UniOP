@@ -119,7 +119,7 @@ class celestrial_body:
         self.color = color
         self.batch = graphics.Batch()
         self.layers, self.vectors = [], {}
-        self.velocity = [0,0,0]
+        self.velocity = innitial_velocity
         self.innitial_velocity = innitial_velocity
 
         if len(position) == 3: self.position = position 
