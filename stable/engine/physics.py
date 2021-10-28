@@ -1,11 +1,10 @@
 from math import *
-import datetime
+from typing import Coroutine
 
 from pyglet.gl.gl import GL_LINES
 from utility.extramaths import *
 from itertools import combinations
 from sys import getsizeof
-# import openpyxl
 
 from pyglet import graphics
 from pyglet.gl import GL_TRIANGLE_STRIP
@@ -114,13 +113,12 @@ class celestrial_body:
         else:
             return [dx, dy, dz]
 
-    def __init__(self, mass:float, position:list, color:list, dcolor:int, radius:float=None, innitial_velocity:list=[0,0,0], density:float=None):
+    def __init__(self, mass:float, position:list, color:list, dcolor:int, radius:float=None, density:float=None):
         self.mass = mass
         self.color = color
         self.batch = graphics.Batch()
         self.layers, self.vectors = [], {}
-        self.velocity = innitial_velocity
-        self.innitial_velocity = innitial_velocity
+        self.velocity = [0,0,0]
 
         if len(position) == 3: self.position = position 
         else: raise ValueError("Expected 3 values, got "+str(len(position)))
@@ -228,6 +226,10 @@ class cosmos:
         for body in cls.objects:
             body.position = sPos[cls.objects.index(body)]
 
+        # with open('timeline.json', 'w+') as f:
+        #     import json
+        #     json.dump(cls.timeline, f)
+
         print(
             'SIMULATION READY!!! \n' 
             + str(byteSimplify(getsizeof(cls.timeline))) + ' total memory cached for timeline \n'
@@ -235,54 +237,3 @@ class cosmos:
             + str(len(cls.timeline)/cls.fps) + 's of simulation is rendered, resembling ' 
             + str(display_time(cls.topRenderedTime))
         )
-    
-    @classmethod
-    def export_results(cls,bodyData=True,velocity=True,position=True,distance=True):
-        with open('timeline.json', 'w+') as f:
-            import json
-            json.dump(cls.timeline, f)
-
-        # wb = openpyxl.Workbook()
-
-        # if bodyData:
-        #     bdSheet = wb.create_sheet(title='body data')
-        #     columeNames = ['Object code reference','Mass','Radius','Color rgb','Starting position', 'Starting velocity']
-        #     for columnName in columeNames:
-        #         L = chr(ord('@')+columeNames.index(columnName)+1)
-        #         bdSheet[f'{L}1'] = columnName
-        #     for body in cls.objects:
-        #         bdSheet[f'A{cls.objects.index(body)+2}'] = str(body)
-        #         bdSheet[f'B{cls.objects.index(body)+2}'] = body.mass
-        #         bdSheet[f'C{cls.objects.index(body)+2}'] = body.radius
-        #         bdSheet[f'D{cls.objects.index(body)+2}'] = str(body.color).removeprefix('[').removesuffix(']')
-        #         bdSheet[f'E{cls.objects.index(body)+2}'] = str(
-        #             list(cls.timeline.values())[0][cls.objects.index(body)]).removeprefix('[').removesuffix(']'
-        #         )
-        #         bdSheet[f'F{cls.objects.index(body)+2}'] = str(
-        #             body.innitial_velocity).removeprefix('[').removesuffix(']'
-        #         )
-        
-        # if velocity or position or distance:
-        #     for body in cls.objects:
-        #         statSheet = wb.create_sheet(title='body ' + str(cls.objects.index(body)+1))
-        #         statSheet['B1'] = 'X-Position'
-        #         statSheet['C1'] = 'Y-Position'
-        #         statSheet['D1'] = 'Z-Position'
-
-        #         t = 2
-        #         for time in list(cls.timeline.keys()):
-        #             statSheet[f'A{t}'] = time
-        #             t += 1
-                
-        #         for time[cls.objects.index(body)] in list(cls.timeline.values()):
-        #             i = list(cls.timeline.values()).index(time[cls.objects.index(body)])
-        #             statSheet[f'B{i+2}'] = float(time[cls.objects.index(body)][0])
-        #             statSheet[f'C{i+2}'] = float(time[cls.objects.index(body)][1])
-        #             statSheet[f'D{i+2}'] = float(time[cls.objects.index(body)][2])
-
-        # if 'Sheet1' in wb.sheetnames:
-        #     wb.remove(wb['Sheet1'])
-
-        # wb.save(filename=str(
-        #     'UniOP output ' + str(datetime.datetime.now())
-        # ).replace(' ','-').replace(':','.')+'.xlsx')
